@@ -1,16 +1,13 @@
-require("dotenv").config()
+require("dotenv").config({path: './.env'})
 
 require('./src/config/dbConfig')
 
-const express  = require("express")
 
-
-const app = express()
-
-
+const app = require("./src/app")
 
 const port  = process.env.PORT || 8000
 
 app.listen(port, () => {
     console.log(`Server is started at PORT: ${port}`)
 })
+
