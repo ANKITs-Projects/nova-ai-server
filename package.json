@@ -1,0 +1,12 @@
+{
+  "name": "nova-ai-server",
+  "version": "1.0.0",
+  "description": "It's a chat app server for nova-ai integrated with most of hte necessary things",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
