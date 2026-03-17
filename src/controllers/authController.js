@@ -1,6 +1,7 @@
 const { generateToken } = require("../utils/generateToken");
+const { generateHashPass, comparePassword } = require("../utils/hashPassword");
 const User = require("./../models/userModel");
-const bcrypt = require("bcrypt");
+
 
 
 const userSignUp = async (req, res) => {
@@ -13,14 +14,11 @@ const userSignUp = async (req, res) => {
         message: "User Already Exists",
         success: false,
       });
+      return
     }
 
     // encrypt the password
-    const saltRound = +process.env.BCRYPT_SALT_ROUNDS
-    const hashpasword = await bcrypt.hash(
-      req.body.password,
-      saltRound,
-    );
+    const hashpasword = await generateHashPass(req.body.password)
 
     const user = { ...req.body, password: hashpasword };
 
@@ -50,15 +48,17 @@ const userLogin = async (req,res) => {
                 message : "User not exist",
                 success : false
             })
+            return
         }
         
         // check password
-        const isValied = await bcrypt.compare(req.body.password, user.password) 
+        const isValied = await comparePassword(req.body.password, user.password) 
         if(!isValied) {
             res.status(400).json({
                 message : "Password is incorrect",
                 success : false
             })
+            return
         }
 
         // generate token
