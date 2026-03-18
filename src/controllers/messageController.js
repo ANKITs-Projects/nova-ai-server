@@ -1,10 +1,12 @@
 const { ai_Reply } = require("../services/aiService");
 const Chat = require("./../models/chatModel");
 const Message = require("./../models/messageModel");
+const Project = require("./../models/projectModel");
 
 const sendMessage = async (req, res) => {
   try {
-    const { chatId, message, userId } = req.body;
+    
+    const { message, userId, chatId } = req.body;
 
     // check if message is empty
     if (!message) throw new Error("Message must not be empty!");
@@ -17,10 +19,22 @@ const sendMessage = async (req, res) => {
       // Generate AI Response for fresh chat
       aiReply = await ai_Reply(message);
 
+      // Default Project
+      let project = await Project.findOne({isDefault : true})
+
+      if(!project) {
+        project = await Project.create({
+          name : "Generat Chat",
+          user : userId,
+          isDefault : true
+        })
+      }
+
       // create new chat
       chat = await Chat.create({
         user: userId,
         title: message.substring(0, 30), // first message as title
+        project : project._id
       });
     }
     //  for existing chatId
