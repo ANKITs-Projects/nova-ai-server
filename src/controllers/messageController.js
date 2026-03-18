@@ -5,7 +5,7 @@ const Project = require("./../models/projectModel");
 
 const sendMessage = async (req, res) => {
   try {
-    
+    const { projectId } = req.params;
     const { message, userId, chatId } = req.body;
 
     // check if message is empty
@@ -19,22 +19,28 @@ const sendMessage = async (req, res) => {
       // Generate AI Response for fresh chat
       aiReply = await ai_Reply(message);
 
-      // Default Project
-      let project = await Project.findOne({isDefault : true})
+      let project;
+      // if not project id
+      if (!projectId) {
+        // Default Project
+        project = await Project.findOne({ isDefault: true });
 
-      if(!project) {
-        project = await Project.create({
-          name : "Generat Chat",
-          user : userId,
-          isDefault : true
-        })
+        if (!project) {
+          project = await Project.create({
+            name: "Generat Chat",
+            user: userId,
+            isDefault: true,
+          });
+        }
+      } else {
+        project = await Project.findById(projectId);
       }
 
       // create new chat
       chat = await Chat.create({
         user: userId,
         title: message.substring(0, 30), // first message as title
-        project : project._id
+        project: project._id,
       });
     }
     //  for existing chatId
@@ -60,7 +66,7 @@ const sendMessage = async (req, res) => {
         role: msg.sender == "user" ? "user" : "model",
         parts: [{ text: msg.content }],
       }));
-      
+
       //   Generate AI Response according to previous chat
       aiReply = await ai_Reply(message, formattedMessages);
     }
@@ -84,7 +90,7 @@ const sendMessage = async (req, res) => {
     res.status(200).json({
       message: "Conversation happen successfully",
       success: true,
-      chatId: chat._id,
+      chat,
       data: {
         userMessage,
         aiMessage,

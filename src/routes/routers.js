@@ -14,5 +14,6 @@ router.post('/chat',authMiddleware, sendMessage)
 
 // Project Router
 router.post('/project',authMiddleware, createProject)
+router.post('/project/:projectId',authMiddleware, sendMessage)
 
 module.exports = router
