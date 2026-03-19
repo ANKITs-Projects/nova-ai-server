@@ -5,8 +5,9 @@ const Project = require("./../models/projectModel");
 
 const sendMessage = async (req, res) => {
   try {
+    const userId = req.user
     const { projectId } = req.params;
-    const { message, userId, chatId } = req.body;
+    const { message, chatId } = req.body;
 
     // check if message is empty
     if (!message) throw new Error("Message must not be empty!");
@@ -16,14 +17,17 @@ const sendMessage = async (req, res) => {
 
     // for new chatId
     if (!chatId) {
+
       // Generate AI Response for fresh chat
       aiReply = await ai_Reply(message);
 
       let project;
+
       // if not project id
       if (!projectId) {
+
         // Default Project
-        project = await Project.findOne({ isDefault: true });
+        project = await Project.findOne({ isDefault: true, user : userId });
 
         if (!project) {
           project = await Project.create({
@@ -39,13 +43,14 @@ const sendMessage = async (req, res) => {
       // create new chat
       chat = await Chat.create({
         user: userId,
-        title: message.substring(0, 30), // first message as title
+        title: message.substring(0, 30), 
         project: project._id,
       });
+
     }
-    //  for existing chatId
     else {
       chat = await Chat.findById(chatId);
+
       // check for valied chatId
       if (!chat) {
         return res.status(404).json({
@@ -67,26 +72,26 @@ const sendMessage = async (req, res) => {
         parts: [{ text: msg.content }],
       }));
 
-      //   Generate AI Response according to previous chat
+      // Generate AI Response according to previous chat
       aiReply = await ai_Reply(message, formattedMessages);
+
     }
 
-    // 5. Save User Message
-
+    // Save User Message
     const userMessage = await Message.create({
       chat: chat._id,
       sender: "user",
       content: message,
     });
 
-    // 6. Save AI Message
+    // Save AI Message
     const aiMessage = await Message.create({
       chat: chat._id,
       sender: "assistant",
       content: aiReply,
     });
 
-    // 7. Send Response
+    // Send Response
     res.status(200).json({
       message: "Conversation happen successfully",
       success: true,
@@ -96,6 +101,7 @@ const sendMessage = async (req, res) => {
         aiMessage,
       },
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -104,4 +110,39 @@ const sendMessage = async (req, res) => {
   }
 };
 
-module.exports = { sendMessage };
+const getAllChat = async (req,res) => {
+  try {
+    const userId = req.user
+    let  {projectId} = req.params
+
+    // if not projectId
+    if(!projectId) {
+      const project = await Project.findOne({isDefault : true, user : userId})
+
+      // if not default project
+      if(!project){
+        res.status(400).json({
+          message : "There is no general chat available",
+          success : false
+        })
+        return
+      }
+      projectId = project._id
+    }
+
+    const chats = await Chat.find({project : projectId, user : userId}).sort({ createdAt: 1 })
+
+    res.status(200).json({
+      message : "Get Chat Successfully!",
+      success : true,
+      data : chats
+    })
+
+  } catch (error) {
+    
+  }
+}
+
+module.exports = { sendMessage, getAllChat };
+
+
