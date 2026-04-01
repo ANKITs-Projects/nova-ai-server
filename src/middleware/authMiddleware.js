@@ -2,19 +2,15 @@ const { decodeToken } = require("../utils/generateToken");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        message: "Unauthorized - No token",
-        success: false,
-      });
-    }
-
-    const token = authHeader.split(" ")[1];
+    const token = req.cookie;
 
     if (!token) {
-      // without login conversation logic
+      res.status(400).json({
+        success: false,
+        message: "Login Again"
+      })
+      return
     }
 
     const { userId } = decodeToken(token);
@@ -24,8 +20,8 @@ const authMiddleware = async (req, res, next) => {
     }
     req.user = userId;
     next();
+
   } catch (error) {
-    console.log("middleware");
     res.status(500).json({
       message: error.message,
       success: false,
