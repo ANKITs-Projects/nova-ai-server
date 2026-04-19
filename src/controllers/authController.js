@@ -2,8 +2,6 @@ const { generateToken } = require("../utils/generateToken");
 const { generateHashPass, comparePassword } = require("../utils/hashPassword");
 const User = require("./../models/userModel");
 
-
-
 const userSignUp = async (req, res) => {
   try {
     // checking user already exist
@@ -14,11 +12,11 @@ const userSignUp = async (req, res) => {
         message: "User Already Exists",
         success: false,
       });
-      return
+      return;
     }
 
     // encrypt the password
-    const hashpasword = await generateHashPass(req.body.password)
+    const hashpasword = await generateHashPass(req.body.password);
 
     const user = { ...req.body, password: hashpasword };
 
@@ -36,46 +34,51 @@ const userSignUp = async (req, res) => {
       success: false,
     });
   }
-}
+};
 
-const userLogin = async (req,res) => {
-    try {
-        // Check user exist or not
-        const user = await User.findOne({email : req.body.email}).select("+password")
+const userLogin = async (req, res) => {
+  try {
+    // Check user exist or not
+    const user = await User.findOne({ email: req.body.email }).select(
+      "+password",
+    );
 
-        if(!user){
-            res.status(400).json({
-                message : "User not exist",
-                success : false
-            })
-            return
-        }
-        
-        // check password
-        const isValied = await comparePassword(req.body.password, user.password) 
-        if(!isValied) {
-            res.status(400).json({
-                message : "Password is incorrect",
-                success : false
-            })
-            return
-        }
-
-        // generate token
-        const token = generateToken({userId : user._id})
-        res.cookie("token", token)
-        res.status(200).json({
-            message : "Loggin successfully!",
-            success : true,
-            token
-        })
-
-    } catch (error) {
-        res.status(400).json({
-            message : error.message,
-            success : false
-        })
+    if (!user) {
+      res.status(400).json({
+        message: "User not exist",
+        success: false,
+      });
+      return;
     }
-}
 
-module.exports = {userSignUp, userLogin}
+    // check password
+    const isValied = await comparePassword(req.body.password, user.password);
+    if (!isValied) {
+      res.status(400).json({
+        message: "Password is incorrect",
+        success: false,
+      });
+      return;
+    }
+
+    // generate token
+    const token = generateToken({ userId: user._id });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.status(200).json({
+      message: "Loggin successfully!",
+      success: true
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+module.exports = { userSignUp, userLogin };

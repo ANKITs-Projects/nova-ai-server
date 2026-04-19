@@ -3,8 +3,7 @@ const { decodeToken } = require("../utils/generateToken");
 const authMiddleware = async (req, res, next) => {
   try {
 
-    const token = req.cookie;
-
+    const token = req.cookies?.token;
     if (!token) {
       res.status(400).json({
         success: false,

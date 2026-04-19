@@ -6,8 +6,8 @@ const Project = require("./../models/projectModel");
 const sendMessage = async (req, res) => {
   try {
     const userId = req.user
-    const { projectId } = req.params;
-    const { message, chatId } = req.body;
+    const { projectId, chatId } = req.params;
+    const { message } = req.body;
 
     // check if message is empty
     if (!message) throw new Error("Message must not be empty!");

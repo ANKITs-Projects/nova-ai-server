@@ -15,7 +15,7 @@ router.post('/auth/login', userLogin)
 
 // Chat Router
 router.post('/chat',authMiddleware, sendMessage)
-router.post('/chat/:',authMiddleware, sendMessage)
+router.post('/chat/:chatId',authMiddleware, sendMessage)
 router.get('/allchat',authMiddleware, getAllChat)
 
 // Project Router
