@@ -1,5 +1,5 @@
 const { userSignUp, userLogin } = require("../controllers/authController");
-const { sendMessage, getAllChat } = require("../controllers/messageController");
+const { sendMessage, getAllChat, getChatMessage } = require("../controllers/messageController");
 const profile = require("../controllers/profileController");
 const { createProject } = require("../controllers/projectController");
 const { authMiddleware } = require("../middleware/authMiddleware");
@@ -16,6 +16,7 @@ router.post('/auth/login', userLogin)
 // Chat Router
 router.post('/chat',authMiddleware, sendMessage)
 router.post('/chat/:chatId',authMiddleware, sendMessage)
+router.get('/message/:chatId',authMiddleware, getChatMessage)
 router.get('/allchat',authMiddleware, getAllChat)
 
 // Project Router

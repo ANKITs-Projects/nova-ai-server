@@ -143,6 +143,27 @@ const getAllChat = async (req,res) => {
   }
 }
 
-module.exports = { sendMessage, getAllChat };
+const getChatMessage = async (req, res) => {
+  try {
+    const {chatId} = req.params
+    const messages = await Message.find({ chat: chatId })
+        .sort({
+          createdAt: 1,
+        })
+        .limit(10);
+    res.status(200).json({
+      success: true,
+      message: "Get chat messages",
+      data: messages
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+}
+
+module.exports = { sendMessage, getAllChat, getChatMessage };
 
 
