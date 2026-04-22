@@ -81,4 +81,18 @@ const userLogin = async (req, res) => {
   }
 };
 
-module.exports = { userSignUp, userLogin };
+const userLogout = async (req, res) => {
+  try {
+    res.clearCookie('token');
+    res.status(200).json({
+      success: true,
+      message: "Logout success"
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Logout fail"
+    })
+  }
+}
+module.exports = { userSignUp, userLogin, userLogout };

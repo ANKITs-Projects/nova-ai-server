@@ -1,4 +1,4 @@
-const { userSignUp, userLogin } = require("../controllers/authController");
+const { userSignUp, userLogin, userLogout } = require("../controllers/authController");
 const { sendMessage, getAllChat, getChatMessage } = require("../controllers/messageController");
 const profile = require("../controllers/profileController");
 const { createProject, getProjects } = require("../controllers/projectController");
@@ -12,6 +12,7 @@ router.get("/profile",authMiddleware, profile)
 // Auth Router
 router.post('/auth/signup', userSignUp)
 router.post('/auth/login', userLogin)
+router.get('/auth/logout', userLogout)
 
 // Chat Router
 router.post('/chat',authMiddleware, sendMessage)
