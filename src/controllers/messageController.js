@@ -95,10 +95,12 @@ const sendMessage = async (req, res) => {
     res.status(200).json({
       message: "Conversation happen successfully",
       success: true,
-      chat,
       data: {
-        userMessage,
-        aiMessage,
+        detail: chat,
+        messages: [
+        userMessage.toObject(),
+        aiMessage.toObject()
+      ]
       },
     });
 
@@ -114,10 +116,10 @@ const getAllChat = async (req,res) => {
   try {
     const userId = req.user
     let  {projectId} = req.params
-
+    let project;
     // if not projectId
     if(!projectId) {
-      const project = await Project.findOne({isDefault : true, user : userId})
+      project = await Project.findOne({isDefault : true, user : userId})
 
       // if not default project
       if(!project){
@@ -129,23 +131,33 @@ const getAllChat = async (req,res) => {
       }
       projectId = project._id
     }
+    else{
+      project = await Project.findById(projectId)
+    }
 
-    const chats = await Chat.find({project : projectId, user : userId}).sort({ createdAt: 1 })
+    const chats = await Chat.find({project : projectId, user : userId}).sort({ createdAt: -1 })
 
     res.status(200).json({
       message : "Get Chat Successfully!",
       success : true,
-      data : chats
+      data : {
+        detail: project,
+        chats
+      }
     })
 
   } catch (error) {
-    
+    res.status(500).json({
+            message : error.message,
+            success : false
+        })
   }
 }
 
 const getChatMessage = async (req, res) => {
   try {
     const {chatId} = req.params
+    const chat = await Chat.findById(chatId)
     const messages = await Message.find({ chat: chatId })
         .sort({
           createdAt: 1,
@@ -154,7 +166,10 @@ const getChatMessage = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Get chat messages",
-      data: messages
+      data: {
+        detail: chat,
+        messages
+      }
     })
   } catch (error) {
     res.status(500).json({

@@ -32,5 +32,23 @@ const createProject = async (req,res) => {
     }
 }
 
+const getProjects = async (req, res) => {
+    try {
+        const userId = req.user
+        const data = await Project.find({user: userId, isDefault: false}).sort({ createdAt: 1 })
 
-module.exports = {createProject}
+        res.status(201).json({
+            message : "Get Projects successfull",
+            success : true,
+            data
+        })
+    } catch (error) {
+        res.status(500).json({
+            message : error.message,
+            success : false
+        })
+    }
+}
+
+
+module.exports = {createProject, getProjects}

@@ -1,7 +1,7 @@
 const { userSignUp, userLogin } = require("../controllers/authController");
 const { sendMessage, getAllChat, getChatMessage } = require("../controllers/messageController");
 const profile = require("../controllers/profileController");
-const { createProject } = require("../controllers/projectController");
+const { createProject, getProjects } = require("../controllers/projectController");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
 const router = require("express").Router();
@@ -22,6 +22,7 @@ router.get('/allchat',authMiddleware, getAllChat)
 // Project Router
 router.post('/project',authMiddleware, createProject)
 router.post('/project/:projectId',authMiddleware, sendMessage)
+router.get('/project', authMiddleware, getProjects)
 router.get('/project/:projectId',authMiddleware, getAllChat)
 
 module.exports = router
