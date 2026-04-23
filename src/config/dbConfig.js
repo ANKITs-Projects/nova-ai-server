@@ -12,7 +12,7 @@ const mongoose = require('mongoose')
 //     console.log(`db connection failed : ${err.message}`)
 // })
 
-MONGO_URI = process.env.DB_URI
+const MONGO_URI = process.env.DB_URI; // ✅ fixed
 
 let isConnected = false;
 
@@ -20,10 +20,7 @@ const connectDB = async () => {
     if (isConnected) return;
 
     try {
-        const db = await mongoose.connect(MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        const db = await mongoose.connect(MONGO_URI);
 
         isConnected = db.connections[0].readyState;
         console.log("MongoDB connected");
