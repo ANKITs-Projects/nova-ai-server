@@ -66,8 +66,8 @@ const userLogin = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: isProd, // 🔥 true on Vercel
-      sameSite: isProd ? "none" : "lax", // 🔥 required for cross-origin
+      secure: true, // 🔥 true on Vercel
+      sameSite: "none", // 🔥 required for cross-origin
     });
     res.status(200).json({
       message: "Loggin successfully!",
