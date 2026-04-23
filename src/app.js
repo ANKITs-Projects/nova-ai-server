@@ -13,6 +13,10 @@ app.use(cors({
 app.use(cookieParser())
 app.use(express.json())
 
+app.get("/", (req, res) => {
+    res.status(200).send("Welcome to NovaAi server...");
+});
+
 app.use('/api', router)
 
 
@@ -22,5 +26,6 @@ app.use((req, res) => {
         success : false
     })
 })
+
 
 module.exports = app
