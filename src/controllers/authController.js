@@ -66,12 +66,12 @@ const userLogin = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: isProd, // 🔥 true on Vercel
+      sameSite: isProd ? "none" : "lax", // 🔥 required for cross-origin
     });
     res.status(200).json({
       message: "Loggin successfully!",
-      success: true
+      success: true,
     });
   } catch (error) {
     res.status(400).json({
@@ -83,16 +83,16 @@ const userLogin = async (req, res) => {
 
 const userLogout = async (req, res) => {
   try {
-    res.clearCookie('token');
+    res.clearCookie("token");
     res.status(200).json({
       success: true,
-      message: "Logout success"
-    })
+      message: "Logout success",
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Logout fail"
-    })
+      message: "Logout fail",
+    });
   }
-}
+};
 module.exports = { userSignUp, userLogin, userLogout };
